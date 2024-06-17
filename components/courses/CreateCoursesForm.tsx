@@ -18,6 +18,7 @@ import {
 import { ComboBox } from "../custom/ComboBox";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -55,6 +56,8 @@ export default function CreateCoursesForm({
       subCategoryId: "",
     },
   });
+
+  const { isValid, isSubmitting } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -135,7 +138,13 @@ export default function CreateCoursesForm({
             )}
           />
 
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={!isValid || isSubmitting}>
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Create"
+            )}
+          </Button>
         </form>
       </Form>
     </div>
