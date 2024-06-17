@@ -90,8 +90,8 @@ export default function EditCoursesForm({
       path: `/instructor/courses/${course.id}/basic`,
     },
     {
-      label: "Course Content",
-      path: `/instructor/courses/${course.id}/section`,
+      label: "Curriculum",
+      path: `/instructor/courses/${course.id}/sections`,
     },
   ];
 
