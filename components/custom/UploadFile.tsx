@@ -1,3 +1,5 @@
+"use client";
+
 import { ourFileRouter } from "@/app/api/uploadthing/core";
 import { UploadDropzone } from "@/lib/uploadthing";
 import Image from "next/image";
@@ -10,15 +12,10 @@ interface UploadFileProps {
   page: string;
 }
 
-export default function UploadFile({
-  value,
-  onChange,
-  endpoint,
-  page,
-}: UploadFileProps) {
+const UploadFile = ({ value, onChange, endpoint, page }: UploadFileProps) => {
   return (
     <div className="flex flex-col gap-2">
-      {page === "Edit Courses" && value !== "" && (
+      {page === "Edit Course" && value !== "" && (
         <Image
           src={value}
           alt="image"
@@ -28,7 +25,7 @@ export default function UploadFile({
         />
       )}
 
-      {page === "Edit Sections" && value !== "" && (
+      {page === "Edit Section" && value !== "" && (
         <p className="text-sm font-medium">{value}</p>
       )}
 
@@ -44,4 +41,6 @@ export default function UploadFile({
       />
     </div>
   );
-}
+};
+
+export default UploadFile;
