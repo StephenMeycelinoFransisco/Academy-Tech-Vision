@@ -24,10 +24,10 @@ import {
 import { Input } from "@/components/ui/input";
 import RichEditor from "@/components/custom/RichEditor";
 import { Switch } from "@/components/ui/switch";
-// import PublishButton from "@/components/custom/PublishButton";
-import UploadFile from "@/components/custom/UploadFile";
-import ResourceForm from "./ResourceForm";
+import ResourceForm from "@/components/sections/ResourceForm";
 import Delete from "@/components/custom/Delete";
+import UploadFile from "../custom/UploadFile";
+import PublishButton from "../custom/PublishButton";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -90,7 +90,13 @@ const EditSectionForm = ({
         </Link>
 
         <div className="flex gap-5 items-start">
-          <Button variant="outline">Publish</Button>
+          <PublishButton
+            disabled={!isCompleted}
+            courseId={courseId}
+            sectionId={section.id}
+            isPublished={section.isPublished}
+            page="Section"
+          />
           <Delete item="section" courseId={courseId} sectionId={section.id} />
         </div>
       </div>

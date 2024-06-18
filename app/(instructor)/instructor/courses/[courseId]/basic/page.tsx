@@ -1,9 +1,14 @@
 import EditCoursesForm from "@/components/courses/EditCoursesForm";
+import AlertBanner from "@/components/custom/AlertBanner";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export default async function CourseBasicPage({ params }: { params: { courseId: string } }) {
+export default async function CourseBasicPage({
+  params,
+}: {
+  params: { courseId: string };
+}) {
   const { userId } = auth();
 
   if (!userId) {
@@ -14,6 +19,9 @@ export default async function CourseBasicPage({ params }: { params: { courseId: 
     where: {
       id: params.courseId,
       instructorId: userId,
+    },
+    include: {
+      sections: true,
     },
   });
 
@@ -32,8 +40,29 @@ export default async function CourseBasicPage({ params }: { params: { courseId: 
     return redirect("/instructor/courses");
   }
 
+  const requiredFields = [
+    course.title,
+    course.description,
+    course.categoryId,
+    course.subCategoryId,
+    course.levelId,
+    course.imageUrl,
+    course.price,
+    course.sections.some((section) => section.isPublished),
+  ];
+
+  const requiredFieldsCount = requiredFields.length;
+  const missingFields = requiredFields.filter((field) => !Boolean(field));
+  const missingFieldsCount = missingFields.length;
+  const isCompleted = requiredFields.every(Boolean);
+
   return (
     <div className="px-10">
+      <AlertBanner
+        isCompleted={isCompleted}
+        missingFieldsCount={missingFieldsCount}
+        requiredFieldsCount={requiredFieldsCount}
+      />
       <EditCoursesForm
         course={course}
         categories={categories.map((category) => ({
@@ -48,6 +77,7 @@ export default async function CourseBasicPage({ params }: { params: { courseId: 
           label: level.name,
           value: level.id,
         }))}
+        isCompleted={isCompleted}
       />
     </div>
   );
