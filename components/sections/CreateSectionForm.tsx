@@ -2,15 +2,15 @@
 
 import { Course, Section } from "@prisma/client";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,32 +19,32 @@ import {
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import axios from "axios";
-import SectionList from "./SectionList";
+import SectionList from "@/components/sections/SectionList";
+import { Loader2 } from "lucide-react";
 
-export default function CreateSectionForm({
+const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "Title is required and must be at least 2 characters long",
+  }),
+});
+
+const CreateSectionForm = ({
   course,
 }: {
   course: Course & { sections: Section[] };
-}) {
-  const pathName = usePathname();
+}) => {
+  const pathname = usePathname();
   const router = useRouter();
+
   const routes = [
     {
       label: "Basic Information",
       path: `/instructor/courses/${course.id}/basic`,
     },
-    {
-      label: "Curriculum",
-      path: `/instructor/courses/${course.id}/sections`,
-    },
+    { label: "Curriculum", path: `/instructor/courses/${course.id}/sections` },
   ];
 
-  const formSchema = z.object({
-    title: z.string().min(2, {
-      message: "Title is required and minimum 2 characters",
-    }),
-  });
-
+  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,6 +52,9 @@ export default function CreateSectionForm({
     },
   });
 
+  const { isValid, isSubmitting } = form.formState;
+
+  // 2. Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await axios.post(
@@ -61,10 +64,10 @@ export default function CreateSectionForm({
       router.push(
         `/instructor/courses/${course.id}/sections/${response.data.id}`
       );
-      toast.success("Section created successfully");
-    } catch (error) {
-      toast.error("Failed to Create New Section");
-      console.log("Failed to Create New Section", error);
+      toast.success("New Section created!");
+    } catch (err) {
+      toast.error("Something went wrong!");
+      console.log("Failed to create a new section", err);
     }
   };
 
@@ -84,8 +87,8 @@ export default function CreateSectionForm({
     <div className="px-10 py-6">
       <div className="flex gap-5">
         {routes.map((route) => (
-          <Link href={route.path} key={route.path}>
-            <Button variant={pathName === route.path ? "default" : "ghost"}>
+          <Link key={route.path} href={route.path}>
+            <Button variant={pathname === route.path ? "default" : "outline"}>
               {route.label}
             </Button>
           </Link>
@@ -113,22 +116,29 @@ export default function CreateSectionForm({
                 <FormControl>
                   <Input placeholder="Ex: Introduction" {...field} />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <div className="flex gap-5">
             <Link href={`/instructor/courses/${course.id}/basic`}>
               <Button variant="outline" type="button">
                 Cancel
               </Button>
             </Link>
-
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={!isValid || isSubmitting}>
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Create"
+              )}
+            </Button>
           </div>
         </form>
       </Form>
     </div>
   );
-}
+};
+
+export default CreateSectionForm;
