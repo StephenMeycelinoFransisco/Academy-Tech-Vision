@@ -18,7 +18,10 @@ const CoursesByCategory = async ({
 
   return (
     <div className="md:mt-5 md:px-10 xl:px-16 pb-16">
-      <Categories categories={categories} selectedCategory={params.categoryId} />
+      <Categories
+        categories={categories}
+        selectedCategory={params.categoryId}
+      />
       <div className="flex flex-wrap gap-7 justify-center">
         {courses.map((course) => (
           <CourseCard key={course.id} course={course} />
