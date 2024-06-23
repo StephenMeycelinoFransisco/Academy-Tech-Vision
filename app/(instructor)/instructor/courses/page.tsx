@@ -1,3 +1,5 @@
+import { columns } from "@/components/courses/Colums";
+import { DataTable } from "@/components/custom/DataTable";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
@@ -20,7 +22,6 @@ export default async function CoursesPage() {
     },
   });
 
-
   return (
     <div className="px-6 py-4">
       <Link href={"/instructor/create-courses"}>
@@ -32,6 +33,10 @@ export default async function CoursesPage() {
             {course.title}
           </Link>
         ))}
+      </div>
+
+      <div className="mt-5">
+        <DataTable columns={columns} data={courses} />
       </div>
     </div>
   );
